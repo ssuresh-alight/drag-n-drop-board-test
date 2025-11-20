@@ -27,6 +27,7 @@ There is a backend and frontend component to this application. The backend expos
 Frontend:
 The code for frontend lives in `/fe/` directory.
 The project follows standard JavaScript conventions with a focus on readability and maintainability.
+ES6+ features are used where appropriate. Use Javascript classes and modules to organize code.
 Prettier is used as the code formatter with settings configured in `/prettierrc` file.
 JS config for stricter type checking is provided in `/jsconfig.json`.
 JSDocs comments must be provided where types cannot be inferred.
@@ -41,7 +42,7 @@ Backend code is TBD and not a concern at the moment.
 
 ### Architecture Patterns
 
-The FE is structured using a modular approach with separation of concerns between the various components (UI, kanban elements, input handling, data management, API interaction). No build system is used, but ES modules are utilized for better organization.
+The FE is structured using a modular approach with separation of concerns between the various components (UI, kanban elements, input handling, data management, API interaction). No build system is used, but Javascript modules are utilized for better organization.
 The BE is TBD, but will be using a REST API. No need to create or worry about this yet.
 
 ### Testing Strategy
