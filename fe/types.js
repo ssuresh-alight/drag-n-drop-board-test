@@ -5,6 +5,10 @@
 
 // Export empty object to make this a valid ES module
 export {};
+/**
+ * Canonical status union for tasks/lanes.
+ * @typedef {'todo'|'in-progress'|'done'} Status
+ */
 
 /**
  * @typedef {*} ApiClient - API client class (defined in scripts/api.js)
@@ -15,7 +19,7 @@ export {};
  * @property {string} id - Unique task identifier
  * @property {string} title - Task title
  * @property {string} [description] - Optional description
- * @property {('todo'|'in-progress'|'done')} status - Task status
+ * @property {Status} status - Task status
  * @property {number} createdAt - Unix timestamp
  * @property {number} [updatedAt] - Last update timestamp
  */
@@ -45,14 +49,14 @@ export {};
  * @typedef {Object} ComponentOptions
  * @property {HTMLElement} container - Container element
  * @property {import('./scripts/store.js').default} store - Store instance
- * @property {import('./scripts/eventBus.js').default} bus - Event bus instance
+ * @property {import('./scripts/eventBus.js').default|null} bus - Event bus instance (nullable)
  */
 
 /**
  * @typedef {Object} TaskCardData
  * @property {Task} data - Task data
  * @property {import('./scripts/store.js').default} store - Store instance
- * @property {import('./scripts/eventBus.js').default} bus - Event bus instance
+ * @property {import('./scripts/eventBus.js').default|null} bus - Event bus instance (nullable)
  */
 
 /**

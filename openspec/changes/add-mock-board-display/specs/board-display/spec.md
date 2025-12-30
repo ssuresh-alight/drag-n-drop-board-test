@@ -166,5 +166,13 @@ The board SHALL adapt to different screen sizes maintaining usability.
 - TaskCard component handles individual card rendering
 - Mock data should be defined as a simple JavaScript object/array
 - CSS should use flexbox or grid for responsive layouts
+
+### Type Safety Notes (JSDoc)
+
+- Define a reusable `Status` union (`'todo'|'in-progress'|'done'`) and reference it from `Task.status`.
+- Type status maps explicitly as `Record<Status, Task[]>` (or equivalent JSDoc object literal) to avoid `never[]` inference.
+- Ensure lane definitions use `key: Status` so `byStatus[lane.key]` is correctly typed.
+- Annotate arrays and dynamic keys with precise JSDoc to prevent implicit `any` and index signature errors.
+- For async functions, document with `@returns {Promise<void>}` in JSDoc to match implementation.
 - No state management complexity needed for this display-only feature
 - Components should accept data via constructor options following existing patterns

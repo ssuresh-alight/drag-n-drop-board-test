@@ -9,7 +9,7 @@ export default class TaskCard {
     this.data = data || {};
     /** @type {import('../store.js').default|undefined} */
     this.store = store;
-    /** @type {import('../eventBus.js').default|undefined} */
+    /** @type {import('../eventBus.js').default|null|undefined} */
     this.bus = bus;
   }
 
@@ -17,7 +17,24 @@ export default class TaskCard {
    * @returns {HTMLElement|null}
    */
   render() {
-    // Return DOM node for a task card
-    return null;
+    const t = this.data;
+    if (!t || !t.title) return null;
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const title = document.createElement("h3");
+    title.className = "card-title";
+    title.textContent = String(t.title);
+    card.appendChild(title);
+
+    if (t.description) {
+      const desc = document.createElement("p");
+      desc.className = "card-desc";
+      desc.textContent = String(t.description);
+      card.appendChild(desc);
+    }
+
+    return card;
   }
 }

@@ -16,9 +16,14 @@ export default class App {
   }
 
   /**
-   * @returns {void}
+   * @returns {Promise<void>}
    */
-  start() {
-    // Application start hook — implement mounting and initial render here.
+  async start() {
+    if (!this.container || !this.store) return;
+
+    // Render the kanban board into the root container
+    const { default: KanbanBoard } = await import("./ui/kanbanBoard.js");
+    const board = new KanbanBoard({ container: this.container, store: this.store, bus: this.bus });
+    board.render();
   }
 }
