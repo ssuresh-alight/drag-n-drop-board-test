@@ -80,3 +80,16 @@ export {};
  * @callback UnsubscribeFn
  * @returns {void}
  */
+
+/**
+ * @typedef {Object} DragState
+ * @property {string} taskId - ID of the task being dragged
+ * @property {Status} sourceLane - Source lane status (todo|in-progress|done)
+ * @property {number} sourceIndex - Original index in source lane
+ */
+
+/**
+ * @typedef {Object} DropTarget
+ * @property {Status} lane - Target lane status (todo|in-progress|done)
+ * @property {number} index - Target insertion index in lane
+ */

@@ -25,5 +25,10 @@ export default class App {
     const { default: KanbanBoard } = await import("./ui/kanbanBoard.js");
     const board = new KanbanBoard({ container: this.container, store: this.store, bus: this.bus });
     board.render();
+
+    // Subscribe to store updates to re-render on changes
+    this.store.subscribe(() => {
+      board.render();
+    });
   }
 }
