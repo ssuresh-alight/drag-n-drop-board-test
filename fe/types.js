@@ -93,3 +93,9 @@ export {};
  * @property {Status} lane - Target lane status (todo|in-progress|done)
  * @property {number} index - Target insertion index in lane
  */
+
+/**
+ * @typedef {Object} Action
+ * @property {string} type - Action type constant
+ * @property {*} payload - Action payload data
+ */

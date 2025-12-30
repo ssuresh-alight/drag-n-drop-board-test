@@ -1,14 +1,19 @@
 import "../types.js";
+import { rootReducer } from "./reducers.js";
+import StorageService from "./services/storage.js";
 
 export default class Store {
   /**
    * @param {import('../types.js').AppState} [initial]
+   * @param {StorageService} [storageService]
    */
-  constructor(initial = { boards: [], selectedBoardId: null }) {
+  constructor(initial = { boards: [], selectedBoardId: null }, storageService) {
     /** @type {import('../types.js').AppState} */
     this.state = initial;
     /** @type {Set<import('../types.js').StateListener>} */
     this.listeners = new Set();
+    /** @type {StorageService} */
+    this.storage = storageService || new StorageService();
   }
 
   /**
@@ -21,12 +26,24 @@ export default class Store {
   }
 
   /**
-   * @param {Partial<import('../types.js').AppState>} patch
+   * Dispatch an action to update state
+   * @param {import('../types.js').Action|Partial<import('../types.js').AppState>} actionOrPatch
    * @returns {void}
    */
-  dispatch(patch) {
-    // Placeholder: apply patch to state and notify listeners
-    Object.assign(this.state, patch);
+  dispatch(actionOrPatch) {
+    // Handle both old-style patches and new-style actions for backward compatibility
+    // @ts-ignore - Check for type property to distinguish actions from patches
+    if (actionOrPatch.type) {
+      // New action-based dispatch
+      const action = /** @type {import('../types.js').Action} */ (actionOrPatch);
+      this.state = rootReducer(this.state, action);
+    } else {
+      // Legacy patch-based dispatch (deprecated, for backward compatibility)
+      const patch = /** @type {Partial<import('../types.js').AppState>} */ (actionOrPatch);
+      this.state = { ...this.state, ...patch };
+    }
+
+    // Notify all listeners with new state
     for (const l of this.listeners) l(this.state);
     this.persist();
   }
@@ -35,88 +52,17 @@ export default class Store {
    * @returns {void}
    */
   persist() {
-    try {
-      const raw = JSON.stringify(this.state);
-      localStorage.setItem("app_state", raw);
-    } catch (e) {
-      // ignore for now
-    }
+    this.storage.save(this.state);
   }
 
   /**
    * @returns {void}
    */
   load() {
-    try {
-      const raw = localStorage.getItem("app_state");
-      if (!raw) return;
-      this.state = JSON.parse(raw);
+    const loadedState = this.storage.load();
+    if (loadedState) {
+      this.state = loadedState;
       for (const l of this.listeners) l(this.state);
-    } catch (e) {
-      // ignore parse errors
     }
-  }
-
-  /**
-   * Move a task to a new status and position
-   * @param {string} taskId - ID of task to move
-   * @param {import('../types.js').Status} newStatus - Target lane status
-   * @param {number} newIndex - Target position index in lane
-   * @returns {void}
-   */
-  moveTask(taskId, newStatus, newIndex) {
-    const board = this.state.selectedBoardId
-      ? this.state.boards.find((b) => b.id === this.state.selectedBoardId)
-      : this.state.boards[0];
-
-    if (!board) return;
-
-    // Find the task
-    const taskIndex = board.tasks.findIndex((t) => t.id === taskId);
-    if (taskIndex === -1) return;
-
-    const task = board.tasks[taskIndex];
-    const oldStatus = task.status;
-
-    // Remove task from current position
-    board.tasks.splice(taskIndex, 1);
-
-    // Update task status and timestamp
-    task.status = newStatus;
-    task.updatedAt = Date.now();
-
-    // Find insertion point in the tasks array
-    // Tasks are not necessarily sorted by status, so we need to:
-    // 1. Get all tasks with the target status
-    // 2. Find the correct insertion point
-    // 3. Insert the task there
-
-    const tasksWithTargetStatus = board.tasks.filter((t) => t.status === newStatus);
-
-    // Clamp newIndex to valid range
-    const clampedIndex = Math.max(0, Math.min(newIndex, tasksWithTargetStatus.length));
-
-    if (tasksWithTargetStatus.length === 0) {
-      // No tasks with target status, add to end
-      board.tasks.push(task);
-    } else if (clampedIndex === 0) {
-      // Insert before first task with target status
-      const firstTaskIndex = board.tasks.findIndex((t) => t.status === newStatus);
-      board.tasks.splice(firstTaskIndex, 0, task);
-    } else if (clampedIndex >= tasksWithTargetStatus.length) {
-      // Insert after last task with target status
-      const lastTask = tasksWithTargetStatus[tasksWithTargetStatus.length - 1];
-      const lastTaskIndex = board.tasks.findIndex((t) => t.id === lastTask.id);
-      board.tasks.splice(lastTaskIndex + 1, 0, task);
-    } else {
-      // Insert before the task at clampedIndex in the filtered list
-      const targetTask = tasksWithTargetStatus[clampedIndex];
-      const targetTaskIndex = board.tasks.findIndex((t) => t.id === targetTask.id);
-      board.tasks.splice(targetTaskIndex, 0, task);
-    }
-
-    // Notify listeners and persist
-    for (const l of this.listeners) l(this.state);
-    this.persist();
   }
 }
