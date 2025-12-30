@@ -100,8 +100,158 @@ body {
   pointer-events: none;
 }
 
+/* Edit button */
+.card-edit-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+  min-width: 44px; /* Minimum touch target */
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card:hover .card-edit-btn,
+.card:focus-within .card-edit-btn {
+  opacity: 1;
+}
+
+.card-edit-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.card-edit-btn:focus {
+  opacity: 1;
+  outline: 2px solid #4a9eff;
+  outline-offset: 2px;
+}
+
+/* Edit mode styling */
+.card-editing {
+  border-color: #4a9eff;
+  background: #f8fcff;
+  box-shadow: 0 2px 8px rgba(74, 158, 255, 0.2);
+  cursor: default !important;
+  padding-top: 8px; /* Adjust for no edit button */
+}
+
+.card-editing:hover {
+  cursor: default;
+}
+
+/* Edit mode inputs */
+.card-edit-title {
+  width: 100%;
+  font-size: 14px;
+  font-family: inherit;
+  font-weight: 600;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background: #ffffff;
+  transition: border-color 0.2s ease;
+}
+
+.card-edit-title:focus {
+  outline: none;
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+}
+
+.card-edit-title:invalid,
+.card-edit-title:required:invalid {
+  border-color: #e74c3c;
+}
+
+.card-edit-desc {
+  width: 100%;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--muted);
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  margin-bottom: 8px;
+  background: #ffffff;
+  resize: vertical;
+  min-height: 60px;
+  transition: border-color 0.2s ease;
+}
+
+.card-edit-desc:focus {
+  outline: none;
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.1);
+}
+
+/* Edit action buttons */
+.card-edit-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.card-edit-save,
+.card-edit-cancel {
+  padding: 6px 16px;
+  font-size: 13px;
+  font-family: inherit;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  min-width: 60px;
+  min-height: 32px;
+}
+
+.card-edit-save {
+  background-color: #4a9eff;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.card-edit-save:hover:not(:disabled) {
+  background-color: #3a8eef;
+}
+
+.card-edit-save:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.card-edit-save:focus,
+.card-edit-cancel:focus {
+  outline: 2px solid #4a9eff;
+  outline-offset: 2px;
+}
+
+.card-edit-cancel {
+  background-color: #f0f0f0;
+  color: var(--text);
+}
+
+.card-edit-cancel:hover {
+  background-color: #e0e0e0;
+}
+
 @media (max-width: 768px) {
   .board {
     grid-template-columns: 1fr;
+  }
+
+  /* Always show edit button on mobile */
+  .card-edit-btn {
+    opacity: 1;
   }
 }

@@ -9,12 +9,15 @@ export default class KanbanBoard {
   /**
    * @param {Object} options
    * @param {HTMLElement} options.container - Container element for the board
+   * @param {Function} [options.dispatch] - Optional dispatch function for task updates
    */
-  constructor({ container }) {
+  constructor({ container, dispatch }) {
     /** @type {HTMLElement} */
     this.container = container;
     /** @type {import('../../types.js').Board|null} */
     this.currentBoard = null;
+    /** @type {Function} */
+    this.dispatch = dispatch || (() => {});
   }
 
   /**
@@ -67,7 +70,7 @@ export default class KanbanBoard {
       const list = document.createElement("div");
       list.className = "cards";
       for (const t of byStatus[lane.key]) {
-        const card = new TaskCard({ data: t }).render();
+        const card = new TaskCard({ data: t, dispatch: this.dispatch }).render();
         if (card) list.appendChild(card);
       }
       laneEl.appendChild(list);

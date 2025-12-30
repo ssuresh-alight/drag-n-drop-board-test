@@ -49,7 +49,10 @@ export default class App {
     this.DragDropController = DragDropController;
 
     // Initialize the kanban board (pure presentation)
-    this.board = new KanbanBoard({ container: this.container });
+    this.board = new KanbanBoard({
+      container: this.container,
+      dispatch: this.store.dispatch.bind(this.store),
+    });
 
     // Initial render with current board data
     const initialBoard = getSelectedBoard(this.store.state) || null;
