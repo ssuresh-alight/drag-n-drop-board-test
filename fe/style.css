@@ -6,7 +6,7 @@
   --lane-bg: #f7f7f7;
   --card-height: 70px;
   --gap: 10px;
-  --transition-duration: 0.2s;
+  --transition-duration: 0.1s;
   --transition-easing: ease-out;
 }
 
@@ -79,14 +79,6 @@ body {
 .card.dragging {
   opacity: 0.5;
   cursor: grabbing;
-}
-
-.card.shift-down {
-  transform: translateY(calc(var(--card-height) + var(--gap)));
-}
-
-.card.shifted-down {
-  transform: translateY(calc(var(--card-height) + var(--gap)));
 }
 
 .card-title {

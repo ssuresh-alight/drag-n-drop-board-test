@@ -107,19 +107,19 @@ export default class KanbanBoard {
     // Calculate insertion index
     const dropIndex = this.calculateDropIndex(cardsContainer, e.clientY);
 
-    // Remove shift-down from all cards in all lanes first
-    if (this.container) {
-      const allCards = this.container.querySelectorAll(".card:not(.dragging)");
-      allCards.forEach((card) => card.classList.remove("shift-down"));
-    }
-
     // Create or reuse placeholder
     if (!this.placeholderElement) {
       this.placeholderElement = this.createPlaceholder();
     }
 
-    // Insert placeholder at calculated position
+    // FLIP animation: Record "First" positions before layout change
     const cards = Array.from(cardsContainer.querySelectorAll(".card:not(.dragging)"));
+    const firstPositions = new Map();
+    cards.forEach((card) => {
+      firstPositions.set(card, card.getBoundingClientRect().top);
+    });
+
+    // Insert placeholder at calculated position (causes layout change)
     if (dropIndex === 0) {
       cardsContainer.insertBefore(this.placeholderElement, cardsContainer.firstChild);
     } else if (dropIndex >= cards.length) {
@@ -128,19 +128,26 @@ export default class KanbanBoard {
       cardsContainer.insertBefore(this.placeholderElement, cards[dropIndex]);
     }
 
-    // Apply shift-down to cards after placeholder
-    let foundPlaceholder = false;
-    for (const child of Array.from(cardsContainer.children)) {
-      if (child === this.placeholderElement) {
-        foundPlaceholder = true;
-      } else if (
-        foundPlaceholder &&
-        child.classList.contains("card") &&
-        !child.classList.contains("dragging")
-      ) {
-        child.classList.add("shift-down");
+    // FLIP animation: Record "Last" positions and animate
+    cards.forEach((card) => {
+      if (!(card instanceof HTMLElement)) return;
+
+      const firstTop = firstPositions.get(card);
+      const lastTop = card.getBoundingClientRect().top;
+      const deltaY = firstTop - lastTop;
+
+      if (deltaY !== 0) {
+        // "Invert" - Move card back to where it was
+        card.style.transform = `translateY(${deltaY}px)`;
+        card.style.transition = "none";
+
+        // "Play" - Animate to new position
+        requestAnimationFrame(() => {
+          card.style.transition = "transform 0.1s ease-out";
+          card.style.transform = "translateY(0)";
+        });
       }
-    }
+    });
 
     // Update drop target
     this.dropTarget = {
@@ -217,14 +224,12 @@ export default class KanbanBoard {
     this.draggedTaskId = null;
     this.dropTarget = null;
 
-    // Remove drag-over class from all lanes and shift-down from all cards
+    // Remove drag-over class from all lanes
     if (this.container) {
       const lanes = this.container.querySelectorAll(".lane");
       lanes.forEach((lane) => {
         lane.classList.remove("drag-over");
       });
-      const allCards = this.container.querySelectorAll(".card");
-      allCards.forEach((card) => card.classList.remove("shift-down"));
     }
   }
 
